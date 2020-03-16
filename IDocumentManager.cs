@@ -1,5 +1,7 @@
 ﻿namespace Ayd.AsposeWord.Library
 {
+    using Config;
+
     public interface IDocumentManager
     {
         /// <summary>
@@ -12,6 +14,14 @@
         /// <param name="stopProcess">Indica si el proceso se detiene o no al encontrar errores en el proceso.</param>
         /// <returns>Devuelve un entero positivo o negatico que indica si el proceso se completo o no.</returns>
         int GenerateDocument(string pathFileTemplate, string fileNameOutput, string pathDirectoryOutput, string[,] values, bool stopProcess = false);
+
+        /// <summary>
+        /// Genera un documento a partir de una clase de configuración.
+        /// </summary>
+        /// <param name="config">Indica la configuración para generar el documento.</param>
+        /// <param name="values">Indica la lista de claves y valores necesarios para generar el documento.</param>
+        /// <returns>Devuelve un entero positivo o negatico que indica si el proceso se completo o no.</returns>
+        int GenerateDocument(DocumentConfig config, string[,] values);
 
         /// <summary>
         /// Agregar o inserta un código de barras en el documento especificado.
@@ -30,16 +40,18 @@
         /// <summary>
         /// Agregar o inserta la imagen de la firma en el documento especificado.
         /// </summary>
-        /// <param name="pathFileTemplate">Indica la ruta completa del documento base o plantilla para insertar la imagen.</param>
-        /// <param name="fileNameOutput">Indica el nombre que se le dara al documento final.</param>
-        /// <param name="pathDirectoryOutput">Indica la ruta del directorio de salida donde se almacena el documento final.</param>
-        /// <param name="pathFileImage">Indica la ruta de ubicación de la imagen.</param>
-        /// <param name="fieldName">Indica el nombre del campo donde se insertará la firma.</param>
-        /// <param name="width">Indica el ancho de la imagen.</param>
-        /// <param name="height">Indica el alto de la imagen.</param>
-        /// <param name="formatOutput">Indica el formato de salida del documento final, debe incluirse el punto.</param>
+        /// <param name="documentConfig">Es la configuración del documento.</param>
+        /// <param name="signatureConfig">Es la configuración de la firma.</param>
         /// <returns>Devuelve un entero positivo o negativo que indica si el proceso se completo o no.</returns>
-        int AddSignatureInDocument(string pathFileTemplate, string fileNameOutput, string pathDirectoryOutput, string pathFileImage, string fieldName, double width, double height, string formatOutput);
+        int AddBarCodeInDocument(DocumentConfig documentConfig, BarCodeConfig barCodeConfig);
+
+        /// <summary>
+        /// Agregar o inserta la imagen de la firma en el documento especificado.
+        /// </summary>
+        /// <param name="documentConfig">Es la configuración del documento.</param>
+        /// <param name="signatureConfig">Es la configuración de la firma.</param>
+        /// <returns>Devuelve un entero positivo o negativo que indica si el proceso se completo o no.</returns>
+        int AddSignatureInDocument(DocumentConfig documentConfig, SignatureConfig signatureConfig);
 
         /// <summary>
         /// Exporta un documento al formato destino especificado.
@@ -50,7 +62,14 @@
         /// <param name="formatOuput">Indica el formato al que será exportado el documento de origen.</param>
         /// <returns>Retorna un número entero positivo o negativo que indica si se completo o no el proceso.</returns>
         int ExportDocumentToFormat(string pathOriginFile, string pathDirectoryOutput, string fileNameOutput, string formatOuput);
-        
+
+        /// <summary>
+        /// Exporta un documento al formato destino especificado.
+        /// </summary>
+        /// <param name="config">Indica la configuración para generar el documento.</param>
+        /// <returns>Retorna un número entero positivo o negativo que indica si se completo o no el proceso.</returns>
+        int ExportDocumentToFormat(DocumentConfig config);
+
         /// <summary>
         /// Genera un documento de solo lectura y lo protege con la contraseña especificada.
         /// </summary>
@@ -68,5 +87,13 @@
         /// <param name="fullPathDocument">Indica la ruta completa del documento en el cual se realiza la busqueda.</param>
         /// <returns>Devuelve verdadero o false si el campo existe o no en el documento.</returns>
         bool FindSignature(string fieldSignature, string fullPathDocument);
+
+        /// <summary>
+        /// Genera un codigo de barras a partir de la data especificada y lo guarda como imagen en formato .png
+        /// </summary>
+        /// <param name="data">Los datos que se van a codificar.</param>
+        /// <param name="fullPathDirectory">El directorio de salida de la imagen.</param>
+        /// <returns>Devuelve un número entero positivo o negativo.</returns>
+        int GenerateBarCodeAsPNG(string data, string fullPathDirectory);
     }
 }

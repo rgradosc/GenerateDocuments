@@ -28,6 +28,10 @@
             {
                 return (int)TypesEvent.UnauthorizedAccess;
             }
+            catch (ArgumentNullException)
+            {
+                return (int)TypesEvent.ParamNullOrEmpty;
+            }
             catch (Exception)
             {
                 return (int)TypesEvent.ErrorGeneric;

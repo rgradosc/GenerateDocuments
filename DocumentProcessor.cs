@@ -40,31 +40,33 @@ namespace Ayd.AsposeWord.Library
 
             NumberFieldsWithoutValue = count;
         }
-        
+
         public static int SaveDocument(this Document document, string directoryOutput, string fileNameOutput, string format = ".docx")
         {
 
             int result = 0;
             try
             {
-                string url = string.Format("{0}{1}{2}", directoryOutput, fileNameOutput, format);
+                var directory = directoryOutput.Substring(directoryOutput.Length - 1, 1) != "\\" ? directoryOutput = directoryOutput + "\\" : directoryOutput;
+
+                string path = $"{directory}{fileNameOutput}{format}";
 
                 switch (format)
                 {
                     case ".tiff":
-                        document.Save(url, SaveFormat.Tiff);
+                        document.Save(path, SaveFormat.Tiff);
                         result = (int)TypesEvent.SuccessProccess;
                         break;
                     case ".pdf":
-                        document.Save(url, SaveFormat.Pdf);
+                        document.Save(path, SaveFormat.Pdf);
                         result = (int)TypesEvent.SuccessProccess;
                         break;
                     case ".doc":
-                        document.Save(url, SaveFormat.Doc);
+                        document.Save(path, SaveFormat.Doc);
                         result = (int)TypesEvent.SuccessProccess;
                         break;
                     case ".docx":
-                        document.Save(url, SaveFormat.Docx);
+                        document.Save(path, SaveFormat.Docx);
                         result = (int)TypesEvent.SuccessProccess;
                         break;
                     default:
@@ -80,10 +82,39 @@ namespace Ayd.AsposeWord.Library
                 return result;
             }
         }
-        
-        public static Field FindFieldsByKeyWord(this Document document, string keyWord)
+
+        public static Document RemoveFieldEmpty(this Document document, string fullPathDirectoryOutput, string fileNameOutput, string formatOuput)
+        {
+            var campos = document.Range.Fields.Where(f => f.Type == FieldType.FieldMergeField).ToList();
+
+            if (campos != null)
+            {
+                for (int i = 0; i < campos.Count; i++)
+                {
+                    var campo = campos[i];
+
+                    if (string.IsNullOrEmpty(campo.Result) || (campo.Result.Contains("«") && campo.Result.Contains("»")))
+                    {
+                        campo.Remove();
+                    }
+                }
+
+                document.Save($"{fullPathDirectoryOutput}{fileNameOutput}{formatOuput}", SaveFormat.Docx);
+            }
+
+            return document;
+        }
+
+        public static Field FindFieldByKeyWord(this Document document, string keyWord)
         {
             var fieldSignatures = document.Range.Fields.Where(f => f.Type == FieldType.FieldMergeField && f.DisplayResult.ToLower().Contains(keyWord.ToLower())).FirstOrDefault();
+
+            return fieldSignatures;
+        }
+
+        public static FormField FindFormFieldByKeyWord(this Document document, string keyWord)
+        {
+            var fieldSignatures = document.Range.FormFields.Where(f => f.Type == FieldType.FieldFormTextInput && f.Name.ToLower().Contains(keyWord.ToLower())).FirstOrDefault();
 
             return fieldSignatures;
         }
@@ -93,6 +124,11 @@ namespace Ayd.AsposeWord.Library
             DocumentBuilder documentBuilder = new DocumentBuilder(document);
             documentBuilder.MoveToMergeField(fieldName);
             documentBuilder.InsertImage(Image.FromFile(imageUrl), width, height);
+        }
+
+        public static void InsertSignaturFooter(Field field, string value)
+        {
+            field.Result = value;
         }
 
         public static string GetFieldNameInMergedField(string displayResult)
@@ -110,6 +146,12 @@ namespace Ayd.AsposeWord.Library
             }
 
             return false;
+        }
+
+        public static void RotateImage(Bitmap bitmap, string fileName)
+        {
+            bitmap.RotateFlip(RotateFlipType.Rotate90FlipY);
+            bitmap.Save(fileName);
         }
     }
 }
