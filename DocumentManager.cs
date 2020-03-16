@@ -309,7 +309,7 @@
         /// <param name="data">Los datos que se van a codificar.</param>
         /// <param name="fullPathDirectory">El directorio de salida de la imagen.</param>
         /// <returns>Devuelve un número entero positivo o negativo.</returns>
-        public int GenerateBarCodeAsPNG(string data, string fullPathDirectory)
+        public int GenerateBarCodeAsPNG(string data, string fullPathDirectory, bool rotate)
         {
             try
             {
@@ -318,7 +318,12 @@
                 string fileName = $"{directory}barCode.png";
                 var barCode = BarcodeWriter.CreateBarcode(data, BarcodeEncoding.Code128);
                 var result = barCode.SaveAsPng(fileName);
-                DocumentProcessor.RotateImage(result.ToBitmap(), fileName);
+
+                if (rotate)
+                {
+                    DocumentProcessor.RotateImage(result.ToBitmap(), fileName); 
+                }
+
                 return (int)TypesEvent.SuccessProccess;
             }
             catch (IronBarCodeEncodingException encex)

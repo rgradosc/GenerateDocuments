@@ -93,7 +93,8 @@
         /// </summary>
         /// <param name="data">Los datos que se van a codificar.</param>
         /// <param name="fullPathDirectory">El directorio de salida de la imagen.</param>
+        /// <param name="rotate">Indica si la imagen sera rotada 90° en el eje Y.</param>
         /// <returns>Devuelve un número entero positivo o negativo.</returns>
-        int GenerateBarCodeAsPNG(string data, string fullPathDirectory);
+        int GenerateBarCodeAsPNG(string data, string fullPathDirectory, bool rotate);
     }
 }
